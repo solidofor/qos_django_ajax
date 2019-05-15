@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+  <style>
+* {
+  box-sizing: border-box;
+}
+
+input[type=text], select, textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: vertical;
+}
+
+label {
+  padding: 12px 12px 12px 0;
+  display: inline-block;
+}
+
+input[type=submit] {
+  background-color: #4CAF50;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  float: right;
+}
+
+input[type=submit]:hover {
+  background-color: #45a049;
+}
+
+.container {
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  padding: 20px;
+}
+
+.col-25 {
+  float: left;
+  width: 25%;
+  margin-top: 6px;
+}
+
+.col-75 {
+  float: left;
+  width: 75%;
+  margin-top: 6px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 600px) {
+  .col-25, .col-75, input[type=submit] {
+    width: 100%;
+    margin-top: 0;
+  }
+}
+</style>
+</head>
+<body>
+
+<h2>Payment Request</h2>
+<p>.</p>
+
+<div class="container">
+  <form action="/api/post" method="POST">
+    <div class="alert alert-{{status}}">
+      <div id="spinner">
+        <strong>
+        {{text|safe}}
+      </strong>
+    </div>
+    <hr/>
+      <div id="response">
+        <p>POST Request Status: {{code}}</p>
+          <h3>Response</h3>
+          <p>Responsecode: {{ responsecode }}</p>
+          <p>Responsemsg: {{ responsemsg }}</p>
+          <p>Transref: {{ transref }}</p>
+          <p>Comment: {{ comment }}</p>
+      </div>
+      {% if responsecode == '01' %}
+      <div id="success">
+        <h2>Thank You Payment was Successful</h2>
+      </div>
+      {% endif %} 
+      <!--<div id="expired">
+        <h2>Sorry Expired</h2>
+      </div> -->
+    </div>
+    {% csrf_token %}
+    <input type="hidden" id="hidden_api" name="hidden_api" readonly value="https://jsonplaceholder.typicode.com/users" placeholder="">
+      
+    
+     <div class="row">
+      <div class="col-25">
+        <label for="fname">Msisdn</label>
+      </div>
+      <div class="col-75">
+        <input type="number" id="msisdn" name="msisdn" value="22997977578"  min="1" placeholder="">
+      </div>
+    </div>
+     <div class="row">
+      <div class="col-25">
+        <label for="fname">Amount</label>
+      </div>
+      <div class="col-75">
+        <input type="number" id="amount" name="amount" value="500"  min="1" placeholder="">
+      </div>
+    </div>
+    
+
+    <div class="row">
+      <div class="col-25">
+        <label for="fname">First Name</label>
+      </div>
+      <div class="col-75">
+        <input type="text" id="fname" name="firstname" readonly value="John" placeholder="Your name..">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-25">
+        <label for="lname">Last Name</label>
+      </div>
+      <div class="col-75">
+        <input type="text" id="lname" name="lastname" required value="Doe" placeholder="Your last name..">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-25">
+        <label for="lname">Client Id</label>
+      </div>
+      <div class="col-75">
+        <input type="text" id="clientid" required name="clientid" value="UBHQ" value="clientid" placeholder="">
+      </div>
+    </div>
+    <hr/>
+    
+    
+    <div class="row">
+      <input type="submit" value="Submit">
+    </div>
+
+  </form>
+</div>
+
+{% if responsecode == '01' %}
+<script>
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function() {
+      var responseText = xhr.responseText;
+      console.log(responseText);
+      // process the response.
+     };
+
+
+  $('#response').show();
+  $('#spinner').show();
+  $('#success').hide();
+</script>
+
+<!-- ajax  -->
+<script>
+  var token = '{{csrf_token}}';
+  var c_i = 0;
+  function executeQuery() {
+    c_i++;
+    console.log(c_i+ " Run")
+
+  $.ajax({
+    type: 'POST',
+    //type: 'GET',
+    dataType: 'json',
+    crossDomain: true,
+    headers:{
+      "Authorization": "Basic " + btoa("{{server_user}}" + ":" + "{{server_pass}}"),
+      "X-CSRFToken": token,
+      "accept": "application/json",
+      "Access-Control-Allow-Origin":"*"
+    },
+    contentType:"application/json; charset=utf-8",
+    //beforeSend: function (xhr) {
+    //  xhr.setRequestHeader ("Authorization", "Basic " + btoa("{{server_user}}" + ":" + "{{server_pass}}"));
+  //},
+    data: JSON.stringify({
+      transref: "{{transref}}",
+      clientid: "{{clientid}}", 
+    }),
+   url: "{{server_link}}/QosicBridge/user/gettransactionstatus",
+    success: function(data,jqXHR, textStatus) {
+      if (textStatus.status == 200) {
+        var json = data;
+        //console.log(json)
+        console.log(json.responsemsg +' '+ json.responsecode)
+        if (json.responsecode == 00) {
+          $('#response').hide();
+          $('#spinner').hide();
+          $('#success').show();
+        }
+        //console.log(JSON.parse(this.responseText));
+        
+      ///////////////////////////////////////////////
+        }
+      //console.log(textStatus.status)
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      console.log(textStatus, errorThrown);
+    }
+    
+
+  });
+  
+  if(c_i < 60){ // to run 60 times thats 5 mins
+    setTimeout(executeQuery, 5000); // you could choose not to continue on failure...
+  }
+  
+}
+
+$(document).ready(function() { 
+  setTimeout(executeQuery, 5000);// run the first time;
+});
+
+
+
+
+  function startTimer(duration, display) {
+      var timer = duration, minutes, seconds;
+      var end =setInterval(function () {
+          minutes = parseInt(timer / 60, 10)
+          seconds = parseInt(timer % 60, 10);
+
+          minutes = minutes < 10 ? "0" + minutes : minutes;
+          seconds = seconds < 10 ? "0" + seconds : seconds;
+
+          display.textContent = minutes + ":" + seconds;
+
+          if (--timer < 0) {
+              //Do somthing on timeout
+              $('#response').hide();
+              $('#spinner').hide();
+              clearInterval(end);
+          }
+      }, 1000);
+  }
+
+  window.onload = function () {
+      var fiveMinutes = 300,
+          display = document.querySelector('#time');
+      startTimer(fiveMinutes, display);
+  };
+
+
+
+</script>
+{% endif %}
+</body>
+</html>
