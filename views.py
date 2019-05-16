@@ -62,13 +62,7 @@ def post(request):
         elif r.status_code == 202:
                 context = {  
                     'status':&quot;success&quot;,
-                    'text':&quot;
-
-Expires in &lt;span id=&quot;time&quot;&gt;05:00&lt;/span&gt;
-
-Check Your Phone; Awaiting Confirmation
-
-&lt;i class=&quot;fa fa-spinner fa-spin&quot; style=&quot;font-size: 60px;&quot;&gt;&lt;/i&gt;&quot;,
+                    'text':"<p>Expires in <span id='time'>05:00</span></p><p>Check Your Phone; Awaiting Confirmation</p><i class='fa fa-spinner fa-spin' style='font-size:60px;'></i>",
                     'code':r.status_code,
                     'responsecode':resp['responsecode'],
                     'responsemsg':resp['responsemsg'],
