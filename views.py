@@ -9,10 +9,10 @@ def api(request):
 def post(request):
     if request.method == &quot;POST&quot;:
         #keys
-		context = 'http://ip_link'
+	context = 'http://ip_link'
         headers = {'content-type':'application/json'}
         url = context + '/QosicBridge/user/requestpayment'
-		raw_url = url;
+	raw_url = url
         msisdn = request.POST['msisdn']
         amount = request.POST['amount']
         firstname = request.POST['firstname']
